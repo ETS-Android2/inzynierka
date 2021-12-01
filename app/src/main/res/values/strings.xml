@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">filip_derbin_praca_inzynierska</string>
+    <string name="login">Login</string>
+    <string name="password">Password</string>
+    <string name="register">Register</string>
+    <string name="attemps_left">Attemps left :</string>
+    <string name="back_Btn">Back</string>
+    <string name="encode">Encode</string>
+    <string name="decode">Decode</string>
+    <string name="input_how_many_qr">Input how many QR</string>
+    <string name="input_your_secret">Input your secret</string>
+    <string name="logout">LogOut</string>
+    <string name="minimum_threshold">Minimum threshold</string>
+
+</resources>

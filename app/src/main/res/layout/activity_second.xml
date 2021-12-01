@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".SecondActivity">
+
+    <EditText
+        android:id="@+id/secret_Text"
+        android:layout_width="300dp"
+        android:layout_height="60dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="100dp"
+        android:ems="10"
+        android:hint="@string/input_your_secret" />
+
+    <EditText
+        android:id="@+id/howManyQR"
+        android:layout_width="300dp"
+        android:layout_height="60dp"
+        android:layout_below="@+id/secret_Text"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp"
+        android:ems="10"
+        android:hint="@string/input_how_many_qr"
+        android:inputType="number" />
+
+    <EditText
+        android:id="@+id/minThreshold"
+        android:layout_width="300dp"
+        android:layout_height="60dp"
+        android:layout_below="@+id/howManyQR"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp"
+        android:ems="10"
+        android:hint="@string/minimum_threshold"
+        android:inputType="number" />
+
+    <Button
+        android:id="@+id/btnEncode"
+        android:layout_width="200dp"
+        android:layout_height="60dp"
+        android:layout_below="@+id/minThreshold"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp"
+        android:text="@string/encode" />
+
+    <Button
+        android:id="@+id/btnDecode"
+        android:layout_width="200dp"
+        android:layout_height="60dp"
+        android:layout_below="@+id/btnEncode"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp"
+        android:text="@string/decode" />
+
+    <Button
+        android:id="@+id/btnLogOut"
+        android:layout_width="200dp"
+        android:layout_height="60dp"
+        android:layout_below="@+id/btnDecode"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp"
+        android:text="@string/logout" />
+
+</RelativeLayout>
