@@ -4,9 +4,11 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -22,6 +24,7 @@ public class RegisterActivity extends AppCompatActivity {
 
     Button reg, back;
     EditText login, password;
+    AppCompatActivity activity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,19 +34,22 @@ public class RegisterActivity extends AppCompatActivity {
         back = findViewById(R.id.btnBack);
         login = findViewById(R.id.login_Text);
         password = findViewById(R.id.password_Text);
+        activity = this;
 
         reg.setOnClickListener(v -> {
             String tempLogin = login.getText().toString();
             String tempPass = password.getText().toString();
             sendDataToDB(tempLogin, tempPass);
-//            Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
-//            startActivity(intent);
+        });
+        back.setOnClickListener(v -> {
+            Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
+            startActivity(intent);
         });
 
     }
 
     public void sendDataToDB(String login, String password) {
-        String urlPOSTUser = "http://192.168.1.104:8080/SERVER/tutorials/addUser";
+        String urlPOSTUser = "http://192.168.1.104:8080/SERVER/temp/addUser";
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         JSONObject postData = new JSONObject();
         try {
@@ -53,17 +59,19 @@ public class RegisterActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, urlPOSTUser,
-             postData, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                Log.d("Response from server : ", response.toString());
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.d("Error response : ", error.toString());
-            }
-        });
+             postData, response -> {
+                 Toast.makeText(activity, "Registration complete successful !", Toast.LENGTH_LONG).show();
+                 new CountDownTimer(3000, 1000) {
+                     public void onTick(long milisUntilFinished) {
+
+                     }
+
+                     public void onFinish() {
+                         Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
+                         startActivity(intent);
+                     }
+                 }.start();
+             }, error -> Toast.makeText(activity, "Something went wrong, please try again !", Toast.LENGTH_LONG).show());
         requestQueue.add(jsonObjectRequest);
     }
 }

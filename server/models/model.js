@@ -1,24 +1,24 @@
-module.exports = (sequelize, Sequelize) => {
+module.exports = (sequelize, DataTypes) => {
     const Tutorial = sequelize.define("users", {
         id: {
-            type: Sequelize.INTEGER,
+            type: DataTypes.INTEGER,
             primaryKey: true,
             autoIncrement: true
         },
         login: {
-            type: Sequelize.STRING,
+            type: DataTypes.STRING,
             allowNull: false
         },
         password: {
-            type: Sequelize.STRING,
+            type: DataTypes.STRING,
             allowNull: false
         },
         createdAt: {
-            type: Sequelize.DATE,
+            type: DataTypes.DATE,
             allowNull: true
         },
         updatedAt: {
-            type: Sequelize.DATE,
+            type: DataTypes.DATE,
             allowNull: true
         }
     });

@@ -1,28 +1,28 @@
-module.exports = (sequelize, Sequelize) => {
+module.exports = (sequelize, DataTypes) => {
     const QrTab = sequelize.define("secTab", {
         id: {
-            type: Sequelize.INTEGER,
+            type: DataTypes.INTEGER,
             primaryKey: true,
             autoIncrement: true
         },
         secret: {
-            type: Sequelize.STRING,
+            type: DataTypes.STRING,
             allowNull: false
         },
         keyValue: {
-            type: Sequelize.STRING,
+            type: DataTypes.STRING,
             allowNull: false
         },
         minThre: {
-            type: Sequelize.INTEGER,
+            type: DataTypes.INTEGER,
             allowNull: false
         },
         createdAt: {
-            type: Sequelize.DATE,
+            type: DataTypes.DATE,
             allowNull: true
         },
         updatedAt: {
-            type: Sequelize.DATE,
+            type: DataTypes.DATE,
             allowNull: true
         }
     });

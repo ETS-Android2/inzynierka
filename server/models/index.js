@@ -20,5 +20,10 @@ db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
 db.tutorials = require("./model.js")(sequelize, Sequelize);
-db.tutorials = require("./model_2.js")(sequelize, Sequelize);
+db.qrtabs = require("./model_2.js")(sequelize, Sequelize);
+db.tutorials.hasMany(db.qrtabs, { as: "qrtabs" });
+db.qrtabs.belongsTo(db.tutorials, {
+  foreignKey: "authorId",
+  // as: "users"
+});
 module.exports = db;
