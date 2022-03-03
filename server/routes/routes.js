@@ -1,24 +1,31 @@
 module.exports = app => {
-    const temp = require("../controllers/controller.js");
+    const temp = require("../controllers/serverController");
 
     var router = require("express").Router();
 
-    // Create UserTab if not exists and input data
-    router.all("/addUser", temp.createUser);
+    //Create CorpTab if not exists and input data
+    router.all("/addCorp", temp.createCorp);
 
-    // Create QrTab if not exists and input data
-    router.all("/addValue", temp.addToQR);
-    
-    // Retrieve all temp
-    router.get("/", temp.findAll);
+    //Create UsersTab if not exists and input data
+    router.all("/addUsers", temp.createUsersAcc);
 
-    // Retrieve a single Tutorial with id
-    router.get("/:login", temp.findOne);
+    //Create temporary png from Base64
+    router.all("/checkQR", temp.decodeQR);
 
-    // Check if sent user data is valid
-    router.all("/acc", temp.findOne);
+    //Check if the user sent a valid qr code that belongs to his/her account
+    router.all("/checkQrValidation", temp.checkIfQRIsValid);
+   
+    //Make request to decrypt secret
+    router.all("/request", temp.makeRequest);
 
-    // router.all("/test", temp.test);
+    //Change user isLogIn statement
+    router.all("/changeIsLoggedStatement", temp.userLogOutOrCloseApp);
+
+    //Check to which corporation user belongs
+    router.all("/corpName", temp.findCorpName);
+
+    //Send secret to client
+    router.all("/checkForSecret", temp.sendSecretToClient);
 
     app.use('/SERVER/temp', router);
 };

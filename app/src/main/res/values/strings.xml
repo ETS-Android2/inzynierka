@@ -1,15 +1,43 @@
 <resources>
     <string name="app_name">filip_derbin_praca_inzynierska</string>
-    <string name="login">Login</string>
+    <string name="organizationName">Organization name</string>
     <string name="password">Password</string>
     <string name="register">Register</string>
-    <string name="attemps_left">Attemps left :</string>
-    <string name="back_Btn">Back</string>
-    <string name="encode">Encode</string>
-    <string name="decode">Decode</string>
-    <string name="input_how_many_qr">Input how many QR</string>
     <string name="input_your_secret">Input your secret</string>
     <string name="logout">LogOut</string>
-    <string name="minimum_threshold">Minimum threshold</string>
+    <string name="secret_T">Corporation secret :</string>
+    <string name="how_many_users_account">How many users account</string>
+    <string name="minimal_threshold">Minimal threshold</string>
+    <string name="login">Login</string>
+    <string name="create_company">Create new users</string>
+    <string name="choose_qr">Choose QR</string>
+    <string name="secret">Secret</string>
+    <string name="already_nhave_an_naccount">Already \nhave an \nAccount?</string>
+    <string name="forgot_password">Forgot Password?</string>
+    <string name="new_user_register_now">New user? Register Now</string>
+    <string name="already_have_an_account">Already have an account?</string>
+    <string name="here_s_nyour_first_nstep_with_nus">Here’s\nyour first\nstep with \nus!</string>
+    <string name="your_corp">Your corporation :</string>
+    <string name="new_login">New Login</string>
+    <string name="new_password">New Password</string>
+    <string name="save_changes">Save changes</string>
+    <string name="generate_new_qr">Generate new QR</string>
+    <string name="you_done_everything">You done everything ?</string>
+    <!-- Preference Titles -->
+    <string name="messages_header">Messages</string>
+    <string name="sync_header">Sync</string>
+
+    <!-- Messages Preferences -->
+    <string name="signature_title">Your signature</string>
+    <string name="reply_title">Default reply action</string>
+
+    <!-- Sync Preferences -->
+    <string name="sync_title">Sync email periodically</string>
+    <string name="attachment_title">Download incoming attachments</string>
+    <string name="attachment_summary_on">Automatically download attachments for incoming emails
+    </string>
+    <string name="attachment_summary_off">Only download attachments when manually requested</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "483877002880",
+    "project_id": "engineeringthesis-f-derbin",
+    "storage_bucket": "engineeringthesis-f-derbin.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:483877002880:android:b5da8401406f3887171065",
+        "android_client_info": {
+          "package_name": "com.example.filip_derbin_praca_inzynierska"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "483877002880-5gvoui0hcht3hsd3qeqvobk9530n2ikd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCOrfaNg95tnPoZht40srwUK97gnwUhR8g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "483877002880-5gvoui0hcht3hsd3qeqvobk9530n2ikd.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

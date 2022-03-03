@@ -19,11 +19,8 @@ const db = {};
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
-db.tutorials = require("./model.js")(sequelize, Sequelize);
-db.qrtabs = require("./model_2.js")(sequelize, Sequelize);
-db.tutorials.hasMany(db.qrtabs, { as: "qrtabs" });
-db.qrtabs.belongsTo(db.tutorials, {
-  foreignKey: "authorId",
-  // as: "users"
-});
+db.users = require("./usersModel.js")(sequelize, Sequelize);
+db.corp = require("./corpModel.js")(sequelize, Sequelize);
+db.requestTab = require("./requestModel.js")(sequelize, Sequelize);
+
 module.exports = db;
