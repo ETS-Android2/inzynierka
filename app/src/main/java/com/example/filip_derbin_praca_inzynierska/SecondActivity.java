@@ -101,14 +101,14 @@ public class SecondActivity extends AppCompatActivity {
         OneSignal.setInAppMessageClickHandler(osInAppMessageAction ->
           OneSignal.onesignalLog(OneSignal.LOG_LEVEL.VERBOSE, "getClickName" + osInAppMessageAction.getClickName()));
 
-        new Timer().scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                if (check) {
-                    checkForSecret(userID);
-                }
-            }
-        }, 0, TIME);
+//        new Timer().scheduleAtFixedRate(new TimerTask() {
+//            @Override
+//            public void run() {
+//                if (check) {
+//                    checkForSecret(userID);
+//                }
+//            }
+//        }, 0, TIME);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -178,7 +178,7 @@ public class SecondActivity extends AppCompatActivity {
     }
 
     public void sendQRToServer(String picturePath) {
-        String urlPOSTUser = "http://192.168.1.104:8080/SERVER/temp/checkQR";
+        String urlPOSTUser = "http://localhost:8080/SERVER/temp/checkQR";
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         JSONObject postData = new JSONObject();
         try {
@@ -195,7 +195,7 @@ public class SecondActivity extends AppCompatActivity {
     }
 
     public void checkIfQRIsValid(String login, String userIDOrg, int tNumber, String requestID) {
-        String urlPOSTUser = "http://192.168.1.104:8080/SERVER/temp/checkQrValidation";
+        String urlPOSTUser = "http://localhost:8080/SERVER/temp/checkQrValidation";
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         JSONObject postData = new JSONObject();
         try {
@@ -206,11 +206,27 @@ public class SecondActivity extends AppCompatActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        @SuppressLint("SetTextI18n")
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, urlPOSTUser,
           postData,
           response -> {
               Toast.makeText(activity, "You picked right QR !", Toast.LENGTH_LONG).show();
               sendRequest = true;
+              Log.d("Response from server: ", response.toString());
+              try {
+                  String resp = response.getString("tempSecretToSend");
+                  if (resp.isEmpty()) {
+                      Log.d("Empty response: ", response.toString());
+                  } else {
+                      if (userIDOrganization.equals(tempID)) {
+                          secret.setText(secret.getText() + "\n" + resp);
+                          secret.invalidate();
+                          check = false;
+                      }
+                  }
+              } catch (JSONException e) {
+                  e.printStackTrace();
+              }
           }, error -> {
             Toast.makeText(activity, "You picked wrong QR !", Toast.LENGTH_LONG).show();
         });
@@ -218,7 +234,7 @@ public class SecondActivity extends AppCompatActivity {
     }
 
     public void makeRequest(String userID, String corpID, String userCorpID) {
-        String urlPOSTUser = "http://192.168.1.104:8080/SERVER/temp/request";
+        String urlPOSTUser = "http://localhost:8080/SERVER/temp/request";
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         JSONObject postData = new JSONObject();
         try {
@@ -244,7 +260,7 @@ public class SecondActivity extends AppCompatActivity {
     }
 
     public void userLogOut(String login, String password) {
-        String urlPOSTUser = "http://192.168.1.104:8080/SERVER/temp/changeIsLoggedStatement";
+        String urlPOSTUser = "http://localhost:8080/SERVER/temp/changeIsLoggedStatement";
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         JSONObject postData = new JSONObject();
         try {
@@ -266,32 +282,32 @@ public class SecondActivity extends AppCompatActivity {
         requestQueue.add(jsonObjectRequest);
     }
 
-    public void checkForSecret(String user) {
-        String urlPOSTUser = "http://192.168.1.104:8080/SERVER/temp/checkForSecret";
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        JSONObject postData = new JSONObject();
-        try {
-            postData.put("userID", user);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        @SuppressLint("SetTextI18n")
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, urlPOSTUser,
-          postData,
-          response -> {
-              try {
-                  if (userIDOrganization.equals(tempID)) {
-                      String tempSecret = response.getString("secret");
-                      secret.setText(secret.getText() + "\n" + tempSecret);
-                      secret.invalidate();
-                      check = false;
-                  }
-              } catch (JSONException e) {
-                  e.printStackTrace();
-              }
-          },
-          error -> {
-          });
-        requestQueue.add(jsonObjectRequest);
-    }
+//    public void checkForSecret(String user) {
+//        String urlPOSTUser = "http://localhost:8080/SERVER/temp/checkForSecret";
+//        RequestQueue requestQueue = Volley.newRequestQueue(this);
+//        JSONObject postData = new JSONObject();
+//        try {
+//            postData.put("userID", user);
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+//        @SuppressLint("SetTextI18n")
+//        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, urlPOSTUser,
+//          postData,
+//          response -> {
+//              try {
+//                  if (userIDOrganization.equals(tempID)) {
+//                      String tempSecret = response.getString("secret");
+//                      secret.setText(secret.getText() + "\n" + tempSecret);
+//                      secret.invalidate();
+//                      check = false;
+//                  }
+//              } catch (JSONException e) {
+//                  e.printStackTrace();
+//              }
+//          },
+//          error -> {
+//          });
+//        requestQueue.add(jsonObjectRequest);
+//    }
 }

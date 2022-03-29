@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
   }
 
   public void checkIfUserIsValid(String login, String password) {
-    String urlPOSTUser = "http://192.168.1.104:8080/SERVER/temp/corpName";
+    String urlPOSTUser = "http://localhost:8080/SERVER/temp/corpName";
     RequestQueue requestQueue = Volley.newRequestQueue(this);
     JSONObject postData = new JSONObject();
     try {

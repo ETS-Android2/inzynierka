@@ -25,7 +25,7 @@ module.exports = app => {
     router.all("/corpName", temp.findCorpName);
 
     //Send secret to client
-    router.all("/checkForSecret", temp.sendSecretToClient);
+    //router.all("/checkForSecret", temp.sendSecretToClient);
 
     app.use('/SERVER/temp', router);
 };

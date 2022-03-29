@@ -67,7 +67,7 @@ public class RegisterActivity extends AppCompatActivity {
                 new Timer().schedule(new TimerTask() {
                     @Override
                     public void run() {
-                        createUsersTable(tempOrganizationName, tempSecret, tempHowManyUsersAcc);
+                        createUsersTable(tempOrganizationName, tempSecret, tempHowManyUsersAcc, tempMinThresholdToDecode);
                     }
                 }, 5000);
             }
@@ -76,7 +76,7 @@ public class RegisterActivity extends AppCompatActivity {
 
     public void createCorpTable(String organizationName, String secret, String howManyUsersAcc,
                                 String minThresholdToDecode) {
-        String urlPOSTUser = "http://192.168.1.104:8080/SERVER/temp/addCorp";
+        String urlPOSTUser = "http://localhost:8080/SERVER/temp/addCorp";
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         JSONObject postData = new JSONObject();
         try {
@@ -95,14 +95,16 @@ public class RegisterActivity extends AppCompatActivity {
         requestQueue.add(jsonObjectRequest);
     }
 
-    public void createUsersTable(String organizationName, String secret, String howManyUsersAcc) {
-        String urlPOSTUser = "http://192.168.1.104:8080/SERVER/temp/addUsers";
+    public void createUsersTable(String organizationName, String secret, String howManyUsersAcc,
+                                 String minThresholdToDecode) {
+        String urlPOSTUser = "http://localhost:8080/SERVER/temp/addUsers";
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         JSONObject postData = new JSONObject();
         try {
             postData.put("corpName", organizationName);
             postData.put("secret", secret);
             postData.put("howManyUsers", howManyUsersAcc);
+            postData.put("threshold", minThresholdToDecode);
         } catch (JSONException e) {
             e.printStackTrace();
         }

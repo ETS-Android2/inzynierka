@@ -7,6 +7,7 @@ const Op = db.Sequelize.Op;
 const crypto = require('crypto');
 const QRCode = require('qrcode');
 const QrCodeDecoder = require('qrcode-reader');
+const shamirSecret = require('shamirs-secret-sharing');
 let admin = require("firebase-admin");
 const fs = require('fs');
 const jimp = require('jimp');
@@ -17,20 +18,40 @@ const OneSignal = require('onesignal-node');
 const { text } = require("express");
 const client = new OneSignal.Client('7ad6bdb1-1e9a-4380-9945-1d1dfc4fdf52', 'Zjc1MTM3ODYtZGJjYi00YWUzLTgzMzItOWZjNGJmOGNjYmU1');
 let currentCorp, currentCorpName, currentCorpID, currentUser, currentUserID, accThreshold, j = 0;
+const algorithm = 'aes-256-cbc';
+const key = 'Filip Derbin Praca Inzynierska 1';
+const iv = crypto.randomBytes(16);
 
-// Create AES keys
 function encrypt(text) {
-    let textOutput = "";
-    const algorithm = 'aes-256-cbc';
-    const key = crypto.randomBytes(32);
-    const iv = crypto.randomBytes(16);
-    let cipher = crypto.createCipheriv(algorithm, Buffer.from(key),
-        iv);
+    let cipher = crypto.createCipheriv('aes-256-cbc', Buffer.from(key), iv);
     let encrypted = cipher.update(text);
     encrypted = Buffer.concat([encrypted, cipher.final()]);
-    textOutput = encrypted.toString('hex');
-    return textOutput;
-};
+    return {
+        iv: iv.toString('hex'), encryptedData: encrypted.toString('hex')
+    };
+}
+
+function decrypt(text, ivFromDB) {
+    let iv = Buffer.from(ivFromDB, 'hex');
+    let encryptedText = Buffer.from(text, 'hex');
+    let decipher = crypto.createDecipheriv('aes-256-cbc', Buffer.from(key), iv);
+    let decrypted = decipher.update(encryptedText);
+    decrypted = Buffer.concat([decrypted, decipher.final()]);
+    return decrypted.toString();
+}
+// Create AES keys
+// function encrypt(text) {
+//     let textOutput = "";
+//     const algorithm = 'aes-256-cbc';
+//     const key = crypto.randomBytes(32);
+//     const iv = crypto.randomBytes(16);
+//     let cipher = crypto.createCipheriv(algorithm, Buffer.from(key),
+//         iv);
+//     let encrypted = cipher.update(text);
+//     encrypted = Buffer.concat([encrypted, cipher.final()]);
+//     textOutput = encrypted.toString('hex');
+//     return textOutput;
+// };
 const createQrCode = async (str) => await QRCode.toDataURL(str);
 // Create corp accunt
 exports.createCorp = (req, res) => {
@@ -94,22 +115,75 @@ exports.createUsersAcc = (req, res) => {
         });
         return;
     }
-    const arrayOfKeys = Array.from(
+
+    //let secretAES = encrypt(req.body.secret);
+    let thresh = req.body.threshold;
+    let leng = req.body.howManyUsers;
+
+    const shares = shamirSecret.split(req.body.secret,
         {
-            length: req.body.howManyUsers
-        },
-        () => encrypt(req.body.secret)
+            shares: parseInt(leng),
+            threshold: parseInt(thresh)
+        }
     );
+
+    let shamirSecretsTab = [];
+    let shamirSecretsEncryptedTab = [];
+
+    let secretsTab = [];
+    let ivTab = [];
+    for (s in shares) {
+        shamirSecretsTab.push(shares[s].toString('hex'));
+    }
+
+    for (ar in shamirSecretsTab) {
+        shamirSecretsEncryptedTab.push(encrypt(shamirSecretsTab[ar]));
+    }
+    for (var i = 0; i < shamirSecretsEncryptedTab.length; i++) {
+        secretsTab.push(shamirSecretsEncryptedTab[i].encryptedData);
+        ivTab.push(shamirSecretsEncryptedTab[i].iv);
+    }
+    // let asd = [];
+    // for (te in shamirSecretsEncryptedTab) {
+    //     asd.push(decrypt(shamirSecretsEncryptedTab[te]));
+    // }
+
+
     let arrayOfQrs = [];
     let usersAcc = [];
-    createArrayOfQrs(arrayOfKeys).then((arr) => {
+    // createArrayOfQrs(arrayOfKeys).then((arr) => {
+    //     arrayOfQrs = [...arr];
+    //     let step, users;
+    //     for (step = 0; step < req.body.howManyUsers; step++) {
+    //         users = {
+    //             login: req.body.corpName + "_" + step,
+    //             password: req.body.corpName + "_" + step,
+    //             aesFromSecret: arrayOfKeys[step],
+    //             organizationID: currentCorp,
+    //             isUserLogIn: req.body.isLogin
+    //         }
+    //         usersAcc.push(users.login);
+    //         User.create(users)
+    //             .catch(err => {
+    //                 res.status(500).send({
+    //                     message:
+    //                         err.message || `.`
+    //                 });
+    //             });
+    //     }
+    //     res.status(200).json({
+    //         arrayOfQrs, usersAcc
+    //     })
+    // })
+    createArrayOfQrs(secretsTab).then((arr) => {
         arrayOfQrs = [...arr];
         let step, users;
         for (step = 0; step < req.body.howManyUsers; step++) {
             users = {
                 login: req.body.corpName + "_" + step,
                 password: req.body.corpName + "_" + step,
-                aesFromSecret: arrayOfKeys[step],
+                aesFromSecret: secretsTab[step],
+                iv: ivTab[step],
                 organizationID: currentCorp,
                 isUserLogIn: req.body.isLogin
             }
@@ -257,6 +331,8 @@ exports.findOne = (req, res) => {
 // function to create file from base64 encoded string
 exports.checkIfQRIsValid = (req, reso) => {
     run('./result.png').then(res => {
+        let temp, tempSecretToSend;
+        var tempThreshForSecret;
         User.findOne({
             where: {
                 aesFromSecret: {
@@ -271,9 +347,13 @@ exports.checkIfQRIsValid = (req, reso) => {
             }
         }).then(data => {
             if (data) {
+                let tempArray = [];
                 let tempUserID = data.id;
                 if (req.body.tNumber == 0) deleteImage();
                 if (req.body.tNumber == 1) {
+                    tempArray.push(decrypt(res, data.iv));
+                    const rec = shamirSecret.combine(tempArray);
+                    tempSecretToSend = rec.toString();
                     RequestTable.findOne({
                         where: {
                             id: req.body.reqID,
@@ -281,7 +361,7 @@ exports.checkIfQRIsValid = (req, reso) => {
                             userIDOrganization: req.body.userOrgID
                         }
                     }).then(data => {
-                        let temp = data.acceptanceThreshold;
+                        temp = data.acceptanceThreshold;
                         if (data.userIDOrganization == req.body.userOrgID) {
                             temp -= 1;
                             db.requestTab.update({
@@ -292,6 +372,7 @@ exports.checkIfQRIsValid = (req, reso) => {
                                     userIDOrganization: data.userIDOrganization
                                 }
                             }).then(result => {
+                                tempThreshForSecret = temp;
                                 deleteImage();
                             }).catch(err => {
                                 console.error(err);
@@ -301,9 +382,15 @@ exports.checkIfQRIsValid = (req, reso) => {
                         console.error(err);
                     });
                 }
-                reso.status(200).json({
-                    message: '.'
-                });
+                if (tempThreshForSecret > 0) {
+                    reso.status(200).json({
+                        
+                    })
+                } else {
+                    reso.status(200).json({
+                        tempSecretToSend
+                    });
+                }
             }
         }).catch(err => {
             console.error(err);
@@ -358,37 +445,37 @@ exports.makeRequest = (req, res) => {
     })
 };
 // Clients use this to check if everyone sends their QRcode
-exports.sendSecretToClient = (req, res) => {
-    let secret = '';
-    let id;
-    if (j == 1 && currentUserID == req.body.userID) {
-        User.findOne({
-            where: {
-                id: req.body.userID
-            }
-        }).then(data => {
-            Corp.findOne({
-                where: {
-                    id: data.organizationID
-                }
-            }).then(data => {
-                secret = data.secret;
-                id = data.id;
-                res.status(200).json({
-                    secret, id
-                });
-            }).catch(err => {
-                console.error(err);
-            })
-        }).catch(err => {
-            console.error(err);
-        })
-    } else {
-        res.status(200).json({
-            message: 'There is still someone who didint send QRcode.'
-        })
-    }
-};
+// exports.sendSecretToClient = (req, res) => {
+//     let secret = '';
+//     let id;
+//     if (j == 1 && currentUserID == req.body.userID) {
+//         User.findOne({
+//             where: {
+//                 id: req.body.userID
+//             }
+//         }).then(data => {
+//             Corp.findOne({
+//                 where: {
+//                     id: data.organizationID
+//                 }
+//             }).then(data => {
+//                 secret = data.secret;
+//                 id = data.id;
+//                 res.status(200).json({
+//                     secret, id
+//                 });
+//             }).catch(err => {
+//                 console.error(err);
+//             })
+//         }).catch(err => {
+//             console.error(err);
+//         })
+//     } else {
+//         res.status(200).json({
+//             message: 'There is still someone who didint send QRcode.'
+//         })
+//     }
+// };
 // Function that run task ( 60 min ), update request table every 1 min and decrease counter 
 function cronTask60(curReqID, curReqUserID) {
     let i = 60;
